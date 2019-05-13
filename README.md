@@ -47,3 +47,16 @@ Then create the quickstart template:
 
 Now when you use "Add to Project" button in the OpenShift console, you should see a template for this quickstart. 
 
+### Database
+create table liquidacion ( Id_Sistema Varchar(1), Id_Usuar Varchar(12), Fecha_Lect Varchar(10), Nro_Fact Varchar(25), Tarifa Varchar(2), SubCatTar Varchar(1), TS Varchar(1), EBP Varchar(1), MAU Varchar(1), ELD Varchar(1), Tension Varchar(1), Tipo_Fact Varchar(1), Tipo_Lec Varchar(1), Tipo_Per Varchar(1), Periodo Varchar(2), Liquidacion Varchar(1), Nro_Fact_Orig Varchar(26), Per_Ref_Base Varchar(10), Cod_Exc_Base Varchar(1), Fecha_Emision Varchar(10), Fecha_Vto_1 Varchar(10), Fecha_Vto_2 Varchar(10), Cambio_Medidor Varchar(1), primary key(Id_Sistema, Id_Usuar, Fecha_Lect, Nro_Fact, Fecha_Emision) ) ENGINE=INNODB;
+
+alter table liquidacion add column nada varchar(1);
+
+create table energia ( Id_Sistema Varchar(1), Id_Usuar Varchar(12), Fecha_Lect Varchar(10), Nro_Fact Varchar(25), Fecha_Emision Varchar(10), Tipo_Energia Varchar(1), Tramo Varchar(1), Consumo double(10,3), Factor_Potencia double(9,3), nada Varchar(1) primary key (Id_Sistema, Id_Usuar, Fecha_Lect, Nro_Fact, Fecha_Emision,Tipo_Energia,Tramo) ) ENGINE=InnoDB;
+
+
+Alter table energia add foreign key fk_liquidacion (Id_Sistema, Id_Usuar, Fecha_Lect, Nro_Fact, Fecha_Emision) references liquidacion (Id_Sistema, Id_Usuar, Fecha_Lect, Nro_Fact, Fecha_Emision) on delete no action on update cascade;Query OK, 0 rows affected (0.01 sec)               
+Records: 0  Duplicates: 0  Warnings: 0
+
+create table liquidacion ( Id_Sistema Varchar(1), Id_Usuar Varchar(12), Fecha_Lect Varchar(10), Nro_Fact Varchar(25), Tarifa Varchar(2), SubCatTar Varchar(1), TS Varchar(1), EBP Varchar(1), MAU Varchar(1), ELD Varchar(1), Tension Varchar(1), Tipo_Fact Varchar(1), Tipo_Lec Varchar(1), Tipo_Per Varchar(1), Periodo Varchar(2), Liquidacion Varchar(1), Nro_Fact_Orig Varchar(26), Per_Ref_Base Varchar(10), Cod_Exc_Base Varchar(1), Fecha_Emision Varchar(10), Fecha_Vto_1 Varchar(10), Fecha_Vto_2 Varchar(10), Cambio_Medidor Varchar(1), primary key(Id_Sistema, Id_Usuar, Fecha_Lect, Nro_Fact, Fecha_Emision) ) ENGINE=INNODB;
+
