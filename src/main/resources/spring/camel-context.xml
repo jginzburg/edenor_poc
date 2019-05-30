@@ -5,12 +5,14 @@
         destroy-method="close" id="mysql">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost/edenorpoc"/>
+        <!--         <property name="url" value="jdbc:mysql://mariadb/edenorpoc"/> -->
         <property name="username" value="guest"/>
         <property name="password" value="redhat01"/>
+        <!--         <property name="password" value="R3dh4t1!"/> -->
     </bean>
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <route id="CSV100Import">
-            <!-- <from uri="ftp:epiz_23713101@ftpupload.net/htdocs/?password=XovGP9Ze&amp;move=.procesados"/> -->
+            <!--             <from id="_from1" uri="sftp://jboss@35.192.130.189/pendientes?password=jboss#1!&amp;include=.*NT100.*.TXT&amp;move=../procesados"/> -->
             <from id="_from1" uri="sftp://guest@localhost/pendientes?password=redhat01&amp;include=.*NT100.*.TXT&amp;move=../procesados"/>
             <log id="logfile" loggingLevel="INFO" message=">>>>>>>>>>>>>>>>****comenzando lectura de archivo 100"/>
             <split id="SplitRecords" parallelProcessing="true" streaming="true">
@@ -18,54 +20,46 @@
                 <unmarshal id="_unmarshal1">
                     <csv delimiter="|" lazyLoad="true"/>
                 </unmarshal>
-                <doTry id="_doTry1">
-                    <transform id="_transform1">
+                <doTry id="_process_line_from_100">
+                    <transform id="_parsing_line">
                         <simple>${body[0]}</simple>
                     </transform>
                     <!-- <log id="logEachCSVRecord" loggingLevel="INFO" message="Process 
 						CSV record: ${body}"/> -->
                     <!-- <log id="route-log" message=">>> ${body}"/> -->
                     <to id="_to1" uri="sql:INSERT INTO liquidacion(        Id_Sistema,        Id_Usuar,        Fecha_Lect,        Nro_Fact,        Tarifa,        SubCatTar,        TS,        EBP,        MAU,        ELD,        Tension,        Tipo_Fact,        Tipo_Lec,        Tipo_Per,        Periodo,        Liquidacion,        Nro_Fact_Orig,        Per_Ref_Base,        Cod_Exc_Base,        Fecha_Emision,        Fecha_Vto_1,        Fecha_Vto_2,        Cambio_Medidor,        nada       ) VALUES(#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#,#       )?dataSource=#mysql"/>
-                    <doCatch id="_doCatch1">
+                    <doCatch id="_catch_error">
                         <exception>java.lang.Exception</exception>
-                        <log id="_log1" message="ERROR procesando linea # ${property.CamelSplitIndex}. ${exception.message}"/>
+                        <log id="_notify_error" message="ERROR procesando linea # ${property.CamelSplitIndex}. ${exception.message}"/>
                     </doCatch>
                 </doTry>
             </split>
             <log id="logfile" loggingLevel="INFO" message=">>>>>>>>>>>>>>>>****finalizada lectura de archivo 100"/>
         </route>
         <route id="CSV106Import">
-            <!-- <from uri="ftp:epiz_23713101@ftpupload.net/htdocs/?password=XovGP9Ze&amp;move=.procesados"/> -->
             <from id="_from1" uri="sftp:guest@localhost/pendientes?password=redhat01&amp;include=.*NT106.*.TXT&amp;move=../procesados"/>
+            <!--             <from id="_from1" uri="sftp:jboss@35.192.130.189/pendientes?password=jboss#1!&amp;include=.*NT106.*.TXT&amp;move=../procesados"/> -->
             <log id="logfile106" loggingLevel="INFO" message=">>>>>>>>>>>>>>>>****comenzando lectura de archivo 106"/>
             <split id="SplitRecords106" parallelProcessing="true" streaming="true">
                 <tokenize token="\n"/>
                 <unmarshal id="_unmarshal106">
                     <csv delimiter="|" lazyLoad="true"/>
                 </unmarshal>
-                <doTry id="_doTry106">
-                    <transform id="_transform106">
+                <doTry id="_process_line_from_106">
+                    <transform id="_parsing_line_106">
                         <simple>${body[0]}</simple>
                     </transform>
                     <!-- <log id="logEachCSVRecord" loggingLevel="INFO" message="Process 
 						CSV record: ${body}"/> -->
                     <!-- <log id="route-log" message=">>> ${body}"/> -->
                     <to id="_to106" uri="sql:INSERT INTO energia(               Id_Sistema,        Id_Usuar,        Fecha_Lect,        Nro_Fact,        Fecha_Emision,        Tipo_Energia,        Tramo,        Consumo,        Factor_Potencia, nada       )                VALUES(#,#,#,#,#,#,#,#,#,#)?dataSource=#mysql"/>
-                    <doCatch id="_doCatch106">
+                    <doCatch id="_catch_error_106">
                         <exception>java.lang.Exception</exception>
-                        <log id="_log106" message="ERROR procesando linea de 106 # ${property.CamelSplitIndex}. ${exception.message}"/>
-                        <log id="logEachCSVRecord" loggingLevel="ERROR" message="Process        CSV record: ${body}"/>
+                        <log id="_notify_error_106" message="ERROR procesando linea de 106 # ${property.CamelSplitIndex}. ${exception.message}"/>
                     </doCatch>
                 </doTry>
             </split>
             <log id="logfileend106" loggingLevel="INFO" message=">>>>>>>>>>>>>>>>****finalizada lectura de archivo liquidacion"/>
         </route>
-        <!-- <route id="simple-route"> -->
-        <!-- <from id="route-timer" uri="timer://foo?period=1000"/> -->
-        <!-- <setBody id="route-setBody"> -->
-        <!-- <simple>Hello World from camel-context.xml</simple> -->
-        <!-- </setBody> -->
-        <!-- <log id="route-log" message=">>> ${body}"/> -->
-        <!-- </route> -->
     </camelContext>
 </beans>
